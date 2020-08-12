@@ -4,6 +4,11 @@ from openke.module.model import TransE
 from openke.module.loss import MarginLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
+import argparse
+
+parser = argparse.ArgumentParser(description="transE")
+parser.add_argument('--new', action='store_true')
+args = parser.parse_args()
 
 # dataloader for training
 train_dataloader = TrainDataLoader(
@@ -25,7 +30,7 @@ transe = TransE(
 	rel_tot = train_dataloader.get_rel_tot(),
 	dim = 200, 
 	p_norm = 1, 
-	norm_flag = True, new=True)
+	norm_flag = True, new=args.new)
 
 
 # define the loss function
