@@ -86,10 +86,11 @@ class TransE(Model):
 			t = self.ent2_embeddings(batch_t)
 		else:
 			t = self.ent_embeddings(batch_t)
-		score = self._calc(h ,t, r, mode)
 		if self.new:
-			score += self._calc(t, h, r2, mode)
-			score /= 2
+			score = (self._calc(h, t, r, mode) + self._calc(t, h, r2, mode)) / 2
+		else:
+			score = self._calc(h ,t, r, mode)
+
 		if self.margin_flag:
 			return self.margin - score
 		else:
