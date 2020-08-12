@@ -17,11 +17,13 @@ class TransE(Model):
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim)
+		self.rel2_embeddings = nn.Embedding(self.rel_tot, self.dim)
 		self.ent2_embeddings = nn.Embedding(self.ent_tot, self.dim)
 
 		if margin == None or epsilon == None:
 			nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
 			nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
+			nn.init.xavier_uniform_(self.rel2_embeddings.weight.data)
 			nn.init.xavier_uniform_(self.ent2_embeddings.weight.data)
 		else:
 			self.embedding_range = nn.Parameter(
@@ -36,6 +38,11 @@ class TransE(Model):
 				tensor = self.ent2_embeddings.weight.data, 
 				a = -self.embedding_range.item(), 
 				b = self.embedding_range.item()
+			)
+			nn.init.uniform_(
+				tensor = self.rel_embeddings.weight.data, 
+				a= -self.embedding_range.item(), 
+				b= self.embedding_range.item()
 			)
 			nn.init.uniform_(
 				tensor = self.rel_embeddings.weight.data, 
@@ -72,13 +79,17 @@ class TransE(Model):
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
 		mode = data['mode']
+		r = self.rel_embeddings(batch_r)
+		r2 = self.rel2_embeddings(batch_r)
 		h = self.ent_embeddings(batch_h)
 		if self.new:
 			t = self.ent2_embeddings(batch_t)
 		else:
 			t = self.ent_embeddings(batch_t)
-		r = self.rel_embeddings(batch_r)
 		score = self._calc(h ,t, r, mode)
+		if self.new:
+			score += self._calc(t, h, r2, mode)
+			score /= 2
 		if self.margin_flag:
 			return self.margin - score
 		else:
