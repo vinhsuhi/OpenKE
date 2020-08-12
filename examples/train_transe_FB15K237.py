@@ -8,6 +8,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="transE")
 parser.add_argument('--new', action='store_true')
+parser.add_argument('--epochs', type=int, default=1000)
 args = parser.parse_args()
 
 # dataloader for training
@@ -41,7 +42,7 @@ model = NegativeSampling(
 )
 
 # train the model
-trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 1000, alpha = 1.0, use_gpu = True)
+trainer = Trainer(model = model, data_loader = train_dataloader, train_times = args.epochs, alpha = 1.0, use_gpu = True)
 trainer.run()
 # transe.save_checkpoint('./checkpoint/transe.ckpt')
 
