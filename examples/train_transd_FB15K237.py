@@ -5,6 +5,12 @@ from openke.module.loss import MarginLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
 
+parser = argparse.ArgumentParser(description="transE")
+parser.add_argument('--new', action='store_true')
+parser.add_argument('--epochs', type=int, default=1000)
+args = parser.parse_args()
+
+
 # dataloader for training
 train_dataloader = TrainDataLoader(
 	in_path = "./benchmarks/FB15K237/", 
@@ -26,7 +32,7 @@ transd = TransD(
 	dim_e = 200, 
 	dim_r = 200, 
 	p_norm = 1, 
-	norm_flag = True)
+	norm_flag = True, new=args.new)
 
 
 # define the loss function
@@ -37,7 +43,7 @@ model = NegativeSampling(
 )
 
 # train the model
-trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 1000, alpha = 1.0, use_gpu = True)
+trainer = Trainer(model = model, data_loader = train_dataloader, train_times = args.epochs, alpha = 1.0, use_gpu = True)
 trainer.run()
 # transd.save_checkpoint('./checkpoint/transd.ckpt')
 
