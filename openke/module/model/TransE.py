@@ -45,7 +45,7 @@ class TransE(Model):
 				b= self.embedding_range.item()
 			)
 			nn.init.uniform_(
-				tensor = self.rel_embeddings.weight.data, 
+				tensor = self.rel2_embeddings.weight.data, 
 				a= -self.embedding_range.item(), 
 				b= self.embedding_range.item()
 			)
