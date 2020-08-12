@@ -5,7 +5,7 @@ from .Model import Model
 
 class TransR(Model):
 
-	def __init__(self, ent_tot, rel_tot, dim_e = 100, dim_r = 100, p_norm = 1, norm_flag = True, rand_init = False, margin = None):
+	def __init__(self, ent_tot, rel_tot, dim_e = 100, dim_r = 100, p_norm = 1, norm_flag = True, rand_init = False, margin = None, new=False):
 		super(TransR, self).__init__(ent_tot, rel_tot)
 		
 		self.dim_e = dim_e
@@ -13,6 +13,7 @@ class TransR(Model):
 		self.norm_flag = norm_flag
 		self.p_norm = p_norm
 		self.rand_init = rand_init
+		self.new = new
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim_r)

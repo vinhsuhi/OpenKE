@@ -5,7 +5,7 @@ from .Model import Model
 
 class TransH(Model):
 
-	def __init__(self, ent_tot, rel_tot, dim = 100, p_norm = 1, norm_flag = True, margin = None, epsilon = None):
+	def __init__(self, ent_tot, rel_tot, dim = 100, p_norm = 1, norm_flag = True, margin = None, epsilon = None, new=False):
 		super(TransH, self).__init__(ent_tot, rel_tot)
 		
 		self.dim = dim
@@ -13,6 +13,7 @@ class TransH(Model):
 		self.epsilon = epsilon
 		self.norm_flag = norm_flag
 		self.p_norm = p_norm
+		self.new = new
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim)
@@ -75,7 +76,7 @@ class TransH(Model):
 		else:
 			return e - torch.sum(e * norm, -1, True) * norm
 
-	def forward(self, data):
+	def forward(self, data, new=False):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
@@ -92,7 +93,7 @@ class TransH(Model):
 		else:
 			return score
 
-	def regularization(self, data):
+	def regularization(self, data, new=False):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']

@@ -25,7 +25,7 @@ transe = TransE(
 	rel_tot = train_dataloader.get_rel_tot(),
 	dim = 200, 
 	p_norm = 1, 
-	norm_flag = True)
+	norm_flag = True, new=True)
 
 
 # define the loss function

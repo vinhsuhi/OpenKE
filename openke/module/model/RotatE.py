@@ -5,7 +5,7 @@ from .Model import Model
 
 class RotatE(Model):
 
-	def __init__(self, ent_tot, rel_tot, dim = 100, margin = 6.0, epsilon = 2.0):
+	def __init__(self, ent_tot, rel_tot, dim = 100, margin = 6.0, epsilon = 2.0, new=False):
 		super(RotatE, self).__init__(ent_tot, rel_tot)
 
 		self.margin = margin
@@ -13,6 +13,7 @@ class RotatE(Model):
 
 		self.dim_e = dim * 2
 		self.dim_r = dim
+		self.new = new
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim_r)

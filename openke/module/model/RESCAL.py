@@ -4,12 +4,13 @@ from .Model import Model
 
 class RESCAL(Model):
 
-	def __init__(self, ent_tot, rel_tot, dim = 100):
+	def __init__(self, ent_tot, rel_tot, dim = 100, new=False):
 		super(RESCAL, self).__init__(ent_tot, rel_tot)
 
 		self.dim = dim
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim)
 		self.rel_matrices = nn.Embedding(self.rel_tot, self.dim * self.dim)
+		self.new = new
 
 		nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
 		nn.init.xavier_uniform_(self.rel_matrices.weight.data)

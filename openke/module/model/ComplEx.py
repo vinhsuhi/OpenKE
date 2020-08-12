@@ -3,7 +3,7 @@ import torch.nn as nn
 from .Model import Model
 
 class ComplEx(Model):
-    def __init__(self, ent_tot, rel_tot, dim = 100):
+    def __init__(self, ent_tot, rel_tot, dim = 100, new=False):
         super(ComplEx, self).__init__(ent_tot, rel_tot)
 
         self.dim = dim
@@ -11,6 +11,7 @@ class ComplEx(Model):
         self.ent_im_embeddings = nn.Embedding(self.ent_tot, self.dim)
         self.rel_re_embeddings = nn.Embedding(self.rel_tot, self.dim)
         self.rel_im_embeddings = nn.Embedding(self.rel_tot, self.dim)
+        self.new = new
 
         nn.init.xavier_uniform_(self.ent_re_embeddings.weight.data)
         nn.init.xavier_uniform_(self.ent_im_embeddings.weight.data)

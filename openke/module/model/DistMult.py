@@ -4,7 +4,7 @@ from .Model import Model
 
 class DistMult(Model):
 
-	def __init__(self, ent_tot, rel_tot, dim = 100, margin = None, epsilon = None):
+	def __init__(self, ent_tot, rel_tot, dim = 100, margin = None, epsilon = None, new=False):
 		super(DistMult, self).__init__(ent_tot, rel_tot)
 
 		self.dim = dim

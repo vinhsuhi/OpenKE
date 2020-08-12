@@ -6,7 +6,7 @@ from numpy import fft
 
 class HolE(Model):
 
-	def __init__(self, ent_tot, rel_tot, dim = 100, margin = None, epsilon = None):
+	def __init__(self, ent_tot, rel_tot, dim = 100, margin = None, epsilon = None, new=False):
 		super(HolE, self).__init__(ent_tot, rel_tot)
 
 		self.dim = dim
@@ -14,6 +14,7 @@ class HolE(Model):
 		self.epsilon = epsilon
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim)
+		self.new = new
 
 		if margin == None or epsilon == None:
 			nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
