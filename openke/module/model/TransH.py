@@ -75,7 +75,8 @@ class TransH(Model):
 		else:
 			score = (h + r) - t
 		if t2 is not None:
-			score += 0.1 * (t - t2)
+			score += 0.35 * (t - t2)
+			score /= 1.35
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 

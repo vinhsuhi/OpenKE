@@ -108,7 +108,8 @@ class TransD(Model):
 		else:
 			score = (h + r) - t
 		if self.new:
-			score += 0.1 * (t - t2)
+			score += 0.35 * (t - t2)
+			score /= 1.35
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
