@@ -16,11 +16,13 @@ class TransH(Model):
 		self.new = new
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim)
+		self.ent2_embeddings = nn.Embedding(self.ent_tot, self.dim)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim)
 		self.norm_vector = nn.Embedding(self.rel_tot, self.dim)
 
 		if margin == None or epsilon == None:
 			nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
+			nn.init.xavier_uniform_(self.ent2_embeddings.weight.data)
 			nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
 			nn.init.xavier_uniform_(self.norm_vector.weight.data)
 		else:
@@ -29,6 +31,11 @@ class TransH(Model):
 			)
 			nn.init.uniform_(
 				tensor = self.ent_embeddings.weight.data, 
+				a = -self.embedding_range.item(), 
+				b = self.embedding_range.item()
+			)
+			nn.init.uniform_(
+				tensor = self.ent2_embeddings.weight.data, 
 				a = -self.embedding_range.item(), 
 				b = self.embedding_range.item()
 			)
@@ -82,7 +89,10 @@ class TransH(Model):
 		batch_r = data['batch_r']
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		r_norm = self.norm_vector(batch_r)
 		h = self._transfer(h, r_norm)
@@ -98,7 +108,10 @@ class TransH(Model):
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		r_norm = self.norm_vector(batch_r)
 		regul = (torch.mean(h ** 2) + 

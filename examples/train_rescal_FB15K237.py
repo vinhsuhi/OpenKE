@@ -4,6 +4,12 @@ from openke.module.model import RESCAL
 from openke.module.loss import MarginLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
+import argparse
+
+parser = argparse.ArgumentParser(description="transE")
+parser.add_argument('--new', action='store_true')
+parser.add_argument('--epochs', type=int, default=1000)
+args = parser.parse_args()
 
 # dataloader for training
 train_dataloader = TrainDataLoader(
@@ -24,7 +30,8 @@ test_dataloader = TestDataLoader("./benchmarks/FB15K237/", "link")
 rescal = RESCAL(
 	ent_tot = train_dataloader.get_ent_tot(),
 	rel_tot = train_dataloader.get_rel_tot(),
-	dim = 50
+	dim = 50,
+	new = args.new
 )
 
 # define the loss function
@@ -37,9 +44,9 @@ model = NegativeSampling(
 # train the model
 trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 1000, alpha = 0.1, use_gpu = True, opt_method = "adagrad")
 trainer.run()
-rescal.save_checkpoint('./checkpoint/rescal.ckpt')
+# rescal.save_checkpoint('./checkpoint/rescal.ckpt')
 
 # test the model
-rescal.load_checkpoint('./checkpoint/rescal.ckpt')
+# rescal.load_checkpoint('./checkpoint/rescal.ckpt')
 tester = Tester(model = rescal, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)

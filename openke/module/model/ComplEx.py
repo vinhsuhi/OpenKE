@@ -8,12 +8,16 @@ class ComplEx(Model):
 
         self.dim = dim
         self.ent_re_embeddings = nn.Embedding(self.ent_tot, self.dim)
+        self.ent2_re_embeddings = nn.Embedding(self.ent_tot, self.dim)
         self.ent_im_embeddings = nn.Embedding(self.ent_tot, self.dim)
+        self.ent2_im_embeddings = nn.Embedding(self.ent_tot, self.dim)
         self.rel_re_embeddings = nn.Embedding(self.rel_tot, self.dim)
         self.rel_im_embeddings = nn.Embedding(self.rel_tot, self.dim)
         self.new = new
 
         nn.init.xavier_uniform_(self.ent_re_embeddings.weight.data)
+        nn.init.xavier_uniform_(self.ent2_re_embeddings.weight.data)
+        nn.init.xavier_uniform_(self.ent2_im_embeddings.weight.data)
         nn.init.xavier_uniform_(self.ent_im_embeddings.weight.data)
         nn.init.xavier_uniform_(self.rel_re_embeddings.weight.data)
         nn.init.xavier_uniform_(self.rel_im_embeddings.weight.data)
@@ -33,8 +37,12 @@ class ComplEx(Model):
         batch_r = data['batch_r']
         h_re = self.ent_re_embeddings(batch_h)
         h_im = self.ent_im_embeddings(batch_h)
-        t_re = self.ent_re_embeddings(batch_t)
-        t_im = self.ent_im_embeddings(batch_t)
+        if self.new:
+            t_re = self.ent2_re_embeddings(batch_t)
+            t_im = self.ent2_im_embeddings(batch_t)
+        else:
+            t_re = self.ent_re_embeddings(batch_t)
+            t_im = self.ent_im_embeddings(batch_t)
         r_re = self.rel_re_embeddings(batch_r)
         r_im = self.rel_im_embeddings(batch_r)
         score = self._calc(h_re, h_im, t_re, t_im, r_re, r_im)
@@ -46,8 +54,12 @@ class ComplEx(Model):
         batch_r = data['batch_r']
         h_re = self.ent_re_embeddings(batch_h)
         h_im = self.ent_im_embeddings(batch_h)
-        t_re = self.ent_re_embeddings(batch_t)
-        t_im = self.ent_im_embeddings(batch_t)
+        if self.new:
+            t_re = self.ent2_re_embeddings(batch_t)
+            t_im = self.ent2_im_embeddings(batch_t)
+        else:
+            t_re = self.ent_re_embeddings(batch_t)
+            t_im = self.ent_im_embeddings(batch_t)
         r_re = self.rel_re_embeddings(batch_r)
         r_im = self.rel_im_embeddings(batch_r)
         regul = (torch.mean(h_re ** 2) + 

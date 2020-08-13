@@ -16,6 +16,7 @@ class RotatE(Model):
 		self.new = new
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
+		self.ent2_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim_r)
 
 		self.ent_embedding_range = nn.Parameter(
@@ -25,6 +26,12 @@ class RotatE(Model):
 
 		nn.init.uniform_(
 			tensor = self.ent_embeddings.weight.data, 
+			a=-self.ent_embedding_range.item(), 
+			b=self.ent_embedding_range.item()
+		)
+
+		nn.init.uniform_(
+			tensor = self.ent2_embeddings.weight.data, 
 			a=-self.ent_embedding_range.item(), 
 			b=self.ent_embedding_range.item()
 		)
@@ -82,7 +89,10 @@ class RotatE(Model):
 		batch_r = data['batch_r']
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		score = self.margin - self._calc(h ,t, r, mode)
 		return score
@@ -96,7 +106,10 @@ class RotatE(Model):
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		regul = (torch.mean(h ** 2) + 
 				 torch.mean(t ** 2) + 

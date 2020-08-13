@@ -11,10 +11,12 @@ class DistMult(Model):
 		self.margin = margin
 		self.epsilon = epsilon
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim)
+		self.ent2_embeddings = nn.Embedding(self.ent_tot, self.dim)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim)
 
 		if margin == None or epsilon == None:
 			nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
+			nn.init.xavier_uniform_(self.ent2_embeddings.weight.data)
 			nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
 		else:
 			self.embedding_range = nn.Parameter(
@@ -22,6 +24,11 @@ class DistMult(Model):
 			)
 			nn.init.uniform_(
 				tensor = self.ent_embeddings.weight.data, 
+				a = -self.embedding_range.item(), 
+				b = self.embedding_range.item()
+			)
+			nn.init.uniform_(
+				tensor = self.ent2_embeddings.weight.data, 
 				a = -self.embedding_range.item(), 
 				b = self.embedding_range.item()
 			)
@@ -49,7 +56,10 @@ class DistMult(Model):
 		batch_r = data['batch_r']
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		score = self._calc(h ,t, r, mode)
 		return score
@@ -59,7 +69,11 @@ class DistMult(Model):
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		regul = (torch.mean(h ** 2) + torch.mean(t ** 2) + torch.mean(r ** 2)) / 3
 		return regul

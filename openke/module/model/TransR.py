@@ -16,9 +16,11 @@ class TransR(Model):
 		self.new = new
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
+		self.ent2_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim_r)
 		nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
 		nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
+		nn.init.xavier_uniform_(self.ent2_embeddings.weight.data)
 
 		self.transfer_matrix = nn.Embedding(self.rel_tot, self.dim_e * self.dim_r)
 		if not self.rand_init:
@@ -70,7 +72,10 @@ class TransR(Model):
 		batch_r = data['batch_r']
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		r_transfer = self.transfer_matrix(batch_r)
 		h = self._transfer(h, r_transfer)
@@ -86,7 +91,10 @@ class TransR(Model):
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
 		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
+		if self.new:
+			t = self.ent2_embeddings(batch_t)
+		else:
+			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		r_transfer = self.transfer_matrix(batch_r)
 		regul = (torch.mean(h ** 2) + 

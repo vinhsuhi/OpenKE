@@ -4,6 +4,12 @@ from openke.module.model import TransH
 from openke.module.loss import MarginLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
+import argparse
+
+parser = argparse.ArgumentParser(description="transE")
+parser.add_argument('--new', action='store_true')
+parser.add_argument('--epochs', type=int, default=1000)
+args = parser.parse_args()
 
 # dataloader for training
 train_dataloader = TrainDataLoader(
@@ -25,7 +31,7 @@ transh = TransH(
 	rel_tot = train_dataloader.get_rel_tot(),
 	dim = 200, 
 	p_norm = 1, 
-	norm_flag = True)
+	norm_flag = True, new = args.new)
 
 # define the loss function
 model = NegativeSampling(
@@ -38,9 +44,9 @@ model = NegativeSampling(
 # train the model
 trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 1000, alpha = 0.5, use_gpu = True)
 trainer.run()
-transh.save_checkpoint('./checkpoint/transh.ckpt')
+# transh.save_checkpoint('./checkpoint/transh.ckpt')
 
 # test the model
-transh.load_checkpoint('./checkpoint/transh.ckpt')
+# transh.load_checkpoint('./checkpoint/transh.ckpt')
 tester = Tester(model = transh, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)

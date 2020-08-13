@@ -4,6 +4,12 @@ from openke.module.model import TransE
 from openke.module.loss import SigmoidLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
+import argparse
+
+parser = argparse.ArgumentParser(description="transE")
+parser.add_argument('--new', action='store_true')
+parser.add_argument('--epochs', type=int, default=1000)
+args = parser.parse_args()
 
 # dataloader for training
 train_dataloader = TrainDataLoader(
@@ -27,7 +33,7 @@ transe = TransE(
 	dim = 1024, 
 	p_norm = 1,
 	norm_flag = False,
-	margin = 6.0)
+	margin = 6.0, new=args.new)
 
 
 # define the loss function

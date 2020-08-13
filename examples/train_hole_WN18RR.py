@@ -4,6 +4,12 @@ from openke.module.model import HolE
 from openke.module.loss import SoftplusLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
+import argparse
+
+parser = argparse.ArgumentParser(description="transE")
+parser.add_argument('--new', action='store_true')
+parser.add_argument('--epochs', type=int, default=1000)
+args = parser.parse_args()
 
 # dataloader for training
 train_dataloader = TrainDataLoader(
@@ -24,7 +30,8 @@ test_dataloader = TestDataLoader("./benchmarks/WN18RR/", "link")
 hole = HolE(
 	ent_tot = train_dataloader.get_ent_tot(),
 	rel_tot = train_dataloader.get_rel_tot(),
-	dim = 100
+	dim = 100,
+	new = args.new
 )
 
 # define the loss function
@@ -39,9 +46,9 @@ model = NegativeSampling(
 # train the model
 trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 1000, alpha = 0.5, use_gpu = True, opt_method = "adagrad")
 trainer.run()
-hole.save_checkpoint('./checkpoint/hole.ckpt')
+# hole.save_checkpoint('./checkpoint/hole.ckpt')
 
 # test the model
-hole.load_checkpoint('./checkpoint/hole.ckpt')
+# hole.load_checkpoint('./checkpoint/hole.ckpt')
 tester = Tester(model = hole, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)

@@ -4,6 +4,12 @@ from openke.module.model import DistMult
 from openke.module.loss import SoftplusLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
+import argparse
+
+parser = argparse.ArgumentParser(description="transE")
+parser.add_argument('--new', action='store_true')
+parser.add_argument('--epochs', type=int, default=1000)
+args = parser.parse_args()
 
 # dataloader for training
 train_dataloader = TrainDataLoader(
@@ -24,7 +30,8 @@ test_dataloader = TestDataLoader("./benchmarks/WN18RR/", "link")
 distmult = DistMult(
 	ent_tot = train_dataloader.get_ent_tot(),
 	rel_tot = train_dataloader.get_rel_tot(),
-	dim = 200
+	dim = 200,
+	new = args.new
 )
 
 # define the loss function
@@ -39,9 +46,9 @@ model = NegativeSampling(
 # train the model
 trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 2000, alpha = 0.5, use_gpu = True, opt_method = "adagrad")
 trainer.run()
-distmult.save_checkpoint('./checkpoint/distmult.ckpt')
+# distmult.save_checkpoint('./checkpoint/distmult.ckpt')
 
 # test the model
-distmult.load_checkpoint('./checkpoint/distmult.ckpt')
+# distmult.load_checkpoint('./checkpoint/distmult.ckpt')
 tester = Tester(model = distmult, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)
