@@ -103,7 +103,10 @@ class TransH(Model):
 		r_norm = self.norm_vector(batch_r)
 		h = self._transfer(h, r_norm)
 		t = self._transfer(t, r_norm)
-		score = self._calc(h ,t, r, mode)
+		if self.new:
+			score = self._calc(h ,t, r, mode, self.ent_embeddings(batch_t))
+		else:
+			score = self._calc(h, t, r, mode)
 		if self.margin_flag:
 			return self.margin - score
 		else:
