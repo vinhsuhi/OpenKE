@@ -90,19 +90,25 @@ class TransD(Model):
 		print (paddings)
 		return F.pad(tensor, paddings = paddings, mode = "constant", value = 0)
 
-	def _calc(self, h, t, r, mode):
+	def _calc(self, h, t, r, mode, t2=None):
 		if self.norm_flag:
 			h = F.normalize(h, 2, -1)
 			r = F.normalize(r, 2, -1)
 			t = F.normalize(t, 2, -1)
+			if t2 is not None:
+				t2 = F.normalize(t2, 2, -1)
 		if mode != 'normal':
 			h = h.view(-1, r.shape[0], h.shape[-1])
 			t = t.view(-1, r.shape[0], t.shape[-1])
 			r = r.view(-1, r.shape[0], r.shape[-1])
+			if t2 is not None:
+				t2 = t2.view(-1, r.shape[0], t2.shape[-1])
 		if mode == 'head_batch':
 			score = h + (r - t)
 		else:
 			score = (h + r) - t
+		if self.new:
+			score += 0.3 * (t - t2)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
@@ -136,14 +142,17 @@ class TransD(Model):
 			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		h_transfer = self.ent_transfer(batch_h)
-		if self.new:
-			t_transfer = self.ent2_transfer(batch_t)
-		else:
-			t_transfer = self.ent_transfer(batch_t)
+		# if self.new:
+			# t_transfer = self.ent2_transfer(batch_t)
+		# else:
+		t_transfer = self.ent_transfer(batch_t)
 		r_transfer = self.rel_transfer(batch_r)
 		h = self._transfer(h, h_transfer, r_transfer)
 		t = self._transfer(t, t_transfer, r_transfer)
-		score = self._calc(h ,t, r, mode)
+		if self.new:
+			score = self._calc(h ,t, r, mode, self.ent_embeddings(batch_t))
+		else:
+			score = self._calc(h ,t, r, mode)
 		if self.margin_flag:
 			return self.margin - score
 		else:
@@ -160,10 +169,10 @@ class TransD(Model):
 			t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 		h_transfer = self.ent_transfer(batch_h)
-		if self.new:
-			t_transfer = self.ent2_transfer(batch_t)
-		else:
-			t_transfer = self.ent2_transfer(batch_t)
+		# if self.new:
+			# t_transfer = self.ent2_transfer(batch_t)
+		# else:
+		t_transfer = self.ent_transfer(batch_t)
 		r_transfer = self.rel_transfer(batch_r)
 		regul = (torch.mean(h ** 2) + 
 				 torch.mean(t ** 2) + 
