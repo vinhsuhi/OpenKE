@@ -30,12 +30,16 @@ class Analogy(Model):
 		nn.init.xavier_uniform_(self.ent2_embeddings.weight.data)
 		nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
 
-	def _calc(self, h_re, h_im, h, t_re, t_im, t, r_re, r_im, r):
-		return (-torch.sum(r_re * h_re * t_re +
+	def _calc(self, h_re, h_im, h, t_re, t_im, t, r_re, r_im, r, t2_re=None, t2_im=None, t2 = None):
+			
+		score = (-torch.sum(r_re * h_re * t_re +
 						   r_re * h_im * t_im +
 						   r_im * h_re * t_im -
 						   r_im * h_im * t_re, -1)
 				-torch.sum(h * t * r, -1))
+		if t2 is not None:
+			score += 0.1 * (-torch.sum(t2 * t) - torch.sum(t2_re * t_re) - torch.sum(t2_im * t_im))
+		return score
 
 	def forward(self, data):
 		batch_h = data['batch_h']
@@ -55,7 +59,10 @@ class Analogy(Model):
 		r_re = self.rel_re_embeddings(batch_r)
 		r_im = self.rel_im_embeddings(batch_r)
 		r = self.rel_embeddings(batch_r)
-		score = self._calc(h_re, h_im, h, t_re, t_im, t, r_re, r_im, r)
+		if self.new:
+			score = self._calc(h_re, h_im, h, t_re, t_im, t, r_re, r_im, r, self.ent_re_embeddings(batch_t), self.ent_im_embeddings(batch_t), self.ent_embeddings(batch_t))
+		else:
+			score = self._calc(h_re, h_im, h, t_re, t_im, t, r_re, r_im, r)
 		return score
 
 	def regularization(self, data):

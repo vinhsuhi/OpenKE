@@ -22,14 +22,18 @@ class ComplEx(Model):
         nn.init.xavier_uniform_(self.rel_re_embeddings.weight.data)
         nn.init.xavier_uniform_(self.rel_im_embeddings.weight.data)
 
-    def _calc(self, h_re, h_im, t_re, t_im, r_re, r_im):
-        return torch.sum(
+    def _calc(self, h_re, h_im, t_re, t_im, r_re, r_im, t2_re=None, t2_im=None):
+        score = torch.sum(
             h_re * t_re * r_re
             + h_im * t_im * r_re
             + h_re * t_im * r_im
             - h_im * t_re * r_im,
             -1
         )
+        if t2_re is not None:
+            score += 0.3 * torch.sum(t2_re * t_re, -1) + 0.3 * torch.sum(t2_im * t_im, -1)
+        return score
+        
 
     def forward(self, data):
         batch_h = data['batch_h']
@@ -45,7 +49,10 @@ class ComplEx(Model):
             t_im = self.ent_im_embeddings(batch_t)
         r_re = self.rel_re_embeddings(batch_r)
         r_im = self.rel_im_embeddings(batch_r)
-        score = self._calc(h_re, h_im, t_re, t_im, r_re, r_im)
+        if self.new:
+            score = self._calc(h_re, h_im, t_re, t_im, r_re, r_im, self.ent_re_embeddings(batch_t), self.ent_im_embeddings(batch_t))
+        else:
+            score = self._calc(h_re, h_im, t_re, t_im, r_re, r_im)
         return score
 
     def regularization(self, data):
