@@ -63,20 +63,20 @@ class TransE(Model):
 			h = F.normalize(h, 2, -1)
 			r = F.normalize(r, 2, -1)
 			t = F.normalize(t, 2, -1)
-			if t2:
+			if t2 is not None:
 				t2 = F.normalize(t2, 2, -1)
 		if mode != 'normal':
 			h = h.view(-1, r.shape[0], h.shape[-1])
 			t = t.view(-1, r.shape[0], t.shape[-1])
 			r = r.view(-1, r.shape[0], r.shape[-1])
-			if t2:
+			if t2 is not None:
 				t2 = t2.view(-1, r.shape[0], t2.shape[-1])
 
 		if mode == 'head_batch':
 			score = h + (r - t)
 		else:
 			score = (h + r) - t
-		if t2:
+		if t2 is not None:
 			score = score + 0.1 * (t - t2)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
@@ -87,7 +87,7 @@ class TransE(Model):
 		batch_r = data['batch_r']
 		mode = data['mode']
 		r = self.rel_embeddings(batch_r)
-		r2 = self.rel2_embeddings(batch_r)
+		# r2 = self.rel2_embeddings(batch_r)
 		h = self.ent_embeddings(batch_h)
 		if self.new:
 			t = self.ent2_embeddings(batch_t)
