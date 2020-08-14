@@ -77,8 +77,8 @@ class TransE(Model):
 		else:
 			score = (h + r) - t
 		
-		import pdb
-		pdb.set_trace()
+		# import pdb
+		# pdb.set_trace()
 		# if t2 is not None:
 			# score = (score + 0.3 * (t - t2)) / 1.3
 			# score += 0.1 * (t - t2)
@@ -89,8 +89,8 @@ class TransE(Model):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
-		import pdb 
-		pdb.set_trace()
+		# import pdb 
+		# pdb.set_trace()
 		mode = data['mode']
 		r = self.rel_embeddings(batch_r)
 		# r2 = self.rel2_embeddings(batch_r)
@@ -99,8 +99,8 @@ class TransE(Model):
 			t = self.ent2_embeddings(batch_t)
 		else:
 			t = self.ent_embeddings(batch_t)
-		import pdb
-		pdb.set_trace()
+		# import pdb
+		# pdb.set_trace()
 		if self.new:
 			score = self._calc(h, t, r, mode, self.ent_embeddings(batch_t))
 		else:
