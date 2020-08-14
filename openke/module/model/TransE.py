@@ -77,9 +77,11 @@ class TransE(Model):
 		else:
 			score = (h + r) - t
 		
-		if t2 is not None:
+		import pdb
+		pdb.set_trace()
+		# if t2 is not None:
 			# score = (score + 0.3 * (t - t2)) / 1.3
-			score += 0.1 * (t - t2)
+			# score += 0.1 * (t - t2)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
