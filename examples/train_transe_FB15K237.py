@@ -9,6 +9,7 @@ import argparse
 parser = argparse.ArgumentParser(description="transE")
 parser.add_argument('--new', action='store_true')
 parser.add_argument('--epochs', type=int, default=1000)
+# parser.add_argument('--model_name', type=str, default="FB15K23")
 args = parser.parse_args()
 
 # dataloader for training
