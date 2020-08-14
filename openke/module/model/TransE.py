@@ -97,6 +97,8 @@ class TransE(Model):
 			t = self.ent2_embeddings(batch_t)
 		else:
 			t = self.ent_embeddings(batch_t)
+		import pdb
+		pdb.set_trace()
 		if self.new:
 			score = self._calc(h, t, r, mode, self.ent_embeddings(batch_t))
 		else:
