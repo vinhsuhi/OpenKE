@@ -76,6 +76,8 @@ class TransE(Model):
 			score = h + (r - t)
 		else:
 			score = (h + r) - t
+			if t2 is not None:
+				score += 0.1 * (t - t2)
 		
 		# import pdb
 		# pdb.set_trace()
