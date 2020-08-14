@@ -74,13 +74,13 @@ class TransE(Model):
 
 		if mode == 'head_batch':
 			score = h + (r - t)
-			if t2 is not None:
-				score += 0.1 * (t - t2)
+			
 		else:
 			score = (h + r) - t
 			# if t2 is not None:
 				# score += 0.1 * (t - t2)
-		
+		if t2 is not None and len(t2) <= len(r):
+			score += 0.1 * (t - t2)
 		# import pdb
 		# pdb.set_trace()
 		# if t2 is not None:
