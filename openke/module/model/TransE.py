@@ -89,6 +89,8 @@ class TransE(Model):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
+		import pdb 
+		pdb.set_trace()
 		mode = data['mode']
 		r = self.rel_embeddings(batch_r)
 		# r2 = self.rel2_embeddings(batch_r)
