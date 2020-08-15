@@ -80,7 +80,11 @@ class TransE(Model):
 			score = (hhh + rrr) - ttt
 		# index = np.random.randint(0, 2000, 100).tolist()
 		if t2 is not None:
-			score += 0.9 * (ttt - t2)
+			try:
+				score += 0.9 * (ttt - t2)
+				print("lol")
+			except:
+				continue
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
