@@ -14,7 +14,7 @@ args = parser.parse_args()
 # dataloader for training
 train_dataloader = TrainDataLoader(
 	in_path = "./benchmarks/WN18RR/", 
-	batch_size = 2000,
+	batch_size = 500,
 	threads = 8,
 	sampling_mode = "cross", 
 	bern_flag = 0, 
@@ -45,7 +45,7 @@ model = NegativeSampling(
 )
 
 # train the model
-trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 3000, alpha = 2e-5, use_gpu = True, opt_method = "adam")
+trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 1000, alpha = 2e-5, use_gpu = True, opt_method = "adam")
 trainer.run()
 # transe.save_checkpoint('./checkpoint/transe_2.ckpt')
 
