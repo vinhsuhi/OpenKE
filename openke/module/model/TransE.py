@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .Model import Model
+import numpy
 
 class TransE(Model):
 
@@ -77,8 +78,9 @@ class TransE(Model):
 			
 		else:
 			score = (hhh + rrr) - ttt
+		index = np.random.randint(0, 2000, 100).tolist()
 		if t2 is not None:
-			score += 0.9 * (ttt[:800] - t2[:800])
+			score += 0.9 * (ttt[index] - t2[index])
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
