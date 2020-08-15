@@ -84,7 +84,7 @@ class TransE(Model):
 				score += 0.9 * (ttt - t2)
 				print("lol")
 			except:
-				continue
+				pass
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
