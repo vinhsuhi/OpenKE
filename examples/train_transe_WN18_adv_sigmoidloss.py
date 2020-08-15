@@ -14,8 +14,8 @@ args = parser.parse_args()
 # dataloader for training
 train_dataloader = TrainDataLoader(
 	in_path = "./benchmarks/WN18RR/", 
-	batch_size = 500,
-	threads = 8,
+	batch_size = 2000,
+	threads = 32,
 	sampling_mode = "cross", 
 	bern_flag = 0, 
 	filter_flag = 1, 

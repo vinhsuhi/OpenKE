@@ -60,7 +60,6 @@ class TransE(Model):
 
 
 	def _calc(self, hhh, ttt, rrr, mode, t2=None):
-		import pdb; pdb.set_trace()
 		if self.norm_flag:
 			hhh = F.normalize(hhh, 2, -1)
 			rrr = F.normalize(rrr, 2, -1)
@@ -70,23 +69,18 @@ class TransE(Model):
 		if mode != 'normal':
 			hhh = hhh.view(-1, rrr.shape[0], hhh.shape[-1])
 			ttt = ttt.view(-1, rrr.shape[0], ttt.shape[-1])
-			rrr = rrr.view(-1, rrr.shape[0], rrr.shape[-1])
 			if t2 is not None:
 				t2 = t2.view(-1, rrr.shape[0], t2.shape[-1])
+			rrr = rrr.view(-1, rrr.shape[0], rrr.shape[-1])
+			
 		
 		if mode == 'head_batch':
 			score = hhh + (rrr - ttt)
 			
 		else:
 			score = (hhh + rrr) - ttt
-		# index = np.random.randint(0, 2000, 100).tolist()
 		if t2 is not None:
-			try:
-				score += 0.9 * (ttt - t2)
-				print("lol")
-			except:
-				import pdb; pdb.set_trace()
-				pass
+			score += 0.9 * (ttt - t2)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
