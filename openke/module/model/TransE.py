@@ -58,30 +58,27 @@ class TransE(Model):
 			self.margin_flag = False
 
 
-	def _calc(self, h, t, r, mode, t2=None):
+	def _calc(self, hhh, ttt, rrr, mode, t2=None):
 		if self.norm_flag:
-			hhh = F.normalize(h, 2, -1)
-			rrr = F.normalize(r, 2, -1)
-			ttt = F.normalize(t, 2, -1)
+			hhh = F.normalize(hhh, 2, -1)
+			rrr = F.normalize(rrr, 2, -1)
+			ttt = F.normalize(ttt, 2, -1)
 			if t2 is not None:
 				t2 = F.normalize(t2, 2, -1)
 		if mode != 'normal':
-			hhh = h.view(-1, r.shape[0], h.shape[-1])
-			ttt = t.view(-1, r.shape[0], t.shape[-1])
-			rrr = r.view(-1, r.shape[0], r.shape[-1])
+			hhh = h.view(-1, rrr.shape[0], hhh.shape[-1])
+			ttt = t.view(-1, rrr.shape[0], ttt.shape[-1])
+			rrr = r.view(-1, rrr.shape[0], rrr.shape[-1])
 			if t2 is not None:
-				t2 = t2.view(-1, r.shape[0], t2.shape[-1])
+				t2 = t2.view(-1, rrr.shape[0], t2.shape[-1])
 		
-		import pdb
-		pdb.set_trace()
-
 		if mode == 'head_batch':
-			score = h + (r - t)
+			score = hhh + (rrr - ttt)
 			
 		else:
-			score = (h + r) - t
+			score = (hhh + rrr) - ttt
 		if t2 is not None:
-			score += 0.1 * (t - t2)
+			score += 0.1 * (ttt - t2)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
@@ -89,19 +86,14 @@ class TransE(Model):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
-		# import pdb 
-		# pdb.set_trace()
 		mode = data['mode']
 		r = self.rel_embeddings(batch_r)
-		# r2 = self.rel2_embeddings(batch_r)
 		h = self.ent_embeddings(batch_h)
 		if self.new:
 			t = self.ent2_embeddings(batch_t)
 		else:
 			t = self.ent_embeddings(batch_t)
-		# import pdb
-		# pdb.set_trace()
-		if self.new:
+		if self.new and len(batch_t) < 3000:
 			score = self._calc(h, t, r, mode, self.ent_embeddings(batch_t))
 		else:
 			score = self._calc(h ,t, r, mode)
