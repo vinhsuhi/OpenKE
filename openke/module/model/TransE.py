@@ -78,7 +78,7 @@ class TransE(Model):
 		else:
 			score = (hhh + rrr) - ttt
 		if t2 is not None:
-			score += 0.1 * (ttt - t2)
+			score += 0.9 * (ttt[:800] - t2[:800])
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
