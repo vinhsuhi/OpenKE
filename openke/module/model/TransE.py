@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .Model import Model
-import numpy
+import numpy as np
 
 class TransE(Model):
 
