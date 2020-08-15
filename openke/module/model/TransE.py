@@ -60,6 +60,7 @@ class TransE(Model):
 
 
 	def _calc(self, hhh, ttt, rrr, mode, t2=None):
+		import pdb; pdb.set_trace()
 		if self.norm_flag:
 			hhh = F.normalize(hhh, 2, -1)
 			rrr = F.normalize(rrr, 2, -1)
