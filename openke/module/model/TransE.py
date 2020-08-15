@@ -66,9 +66,9 @@ class TransE(Model):
 			if t2 is not None:
 				t2 = F.normalize(t2, 2, -1)
 		if mode != 'normal':
-			hhh = h.view(-1, rrr.shape[0], hhh.shape[-1])
-			ttt = t.view(-1, rrr.shape[0], ttt.shape[-1])
-			rrr = r.view(-1, rrr.shape[0], rrr.shape[-1])
+			hhh = hhh.view(-1, rrr.shape[0], hhh.shape[-1])
+			ttt = ttt.view(-1, rrr.shape[0], ttt.shape[-1])
+			rrr = rrr.view(-1, rrr.shape[0], rrr.shape[-1])
 			if t2 is not None:
 				t2 = t2.view(-1, rrr.shape[0], t2.shape[-1])
 		
