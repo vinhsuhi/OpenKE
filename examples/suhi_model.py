@@ -1,7 +1,7 @@
 import openke
 from openke.config import Trainer, Tester
 from openke.module.model import TransE
-from openke.module.loss import SigmoidLoss
+from openke.module.loss import MarginLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
 import argparse
@@ -9,47 +9,45 @@ import argparse
 parser = argparse.ArgumentParser(description="transE")
 parser.add_argument('--new', action='store_true')
 parser.add_argument('--epochs', type=int, default=1000)
+# parser.add_argument('--model_name', type=str, default="FB15K23")
 args = parser.parse_args()
 
 # dataloader for training
 train_dataloader = TrainDataLoader(
-	in_path = "./benchmarks/WN18RR/", 
-	batch_size = 2000,
-	threads = 32,
-	sampling_mode = "cross", 
-	bern_flag = 0, 
+	in_path = "./benchmarks/FB15K237/", 
+	nbatches = 100,
+	threads = 8, 
+	sampling_mode = "normal", 
+	bern_flag = 1, 
 	filter_flag = 1, 
-	neg_ent = 64,
-	neg_rel = 0
-)
+	neg_ent = 25,
+	neg_rel = 0)
 
 # dataloader for test
-test_dataloader = TestDataLoader("./benchmarks/WN18RR/", "link")
+test_dataloader = TestDataLoader("./benchmarks/FB15K237/", "link")
 
 # define the model
 transe = TransE(
 	ent_tot = train_dataloader.get_ent_tot(),
 	rel_tot = train_dataloader.get_rel_tot(),
-	dim = 512, 
-	p_norm = 1,
-	norm_flag = False,
-	margin = 6.0, new=args.new)
+	dim = 200, 
+	p_norm = 1, 
+	norm_flag = True, new=args.new)
 
 
 # define the loss function
 model = NegativeSampling(
 	model = transe, 
-	loss = SigmoidLoss(adv_temperature = 1),
-	batch_size = train_dataloader.get_batch_size(), 
-	regul_rate = 0.0
+	loss = MarginLoss(margin = 5.0),
+	batch_size = train_dataloader.get_batch_size()
 )
 
 # train the model
-trainer = Trainer(model = model, data_loader = train_dataloader, train_times = 1000, alpha = 2e-5, use_gpu = True, opt_method = "adam")
+trainer = Trainer(model = model, data_loader = train_dataloader, train_times = args.epochs, alpha = 1.0, use_gpu = True)
 trainer.run()
-# transe.save_checkpoint('./checkpoint/transe_2.ckpt')
+# transe.save_checkpoint('./checkpoint/transe.ckpt')
 
 # test the model
-# transe.load_checkpoint('./checkpoint/transe_2.ckpt')
+# transe.load_checkpoint('./checkpoint/transe.ckpt')
 tester = Tester(model = transe, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)
