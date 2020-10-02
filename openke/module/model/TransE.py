@@ -24,8 +24,10 @@ class TransE(Model):
 		self.rt_linear1 = nn.Linear(dim, dim)
 		self.rt_linear2 = nn.Linear(dim, dim)
 
-		nn.init.xavier_uniform_(self.hr_linear.weight.data)
-		nn.init.xavier_uniform_(self.rt_linear.weight.data)
+		nn.init.xavier_uniform_(self.hr_linear1.weight.data)
+		nn.init.xavier_uniform_(self.rt_linear1.weight.data)
+		nn.init.xavier_uniform_(self.hr_linear2.weight.data)
+		nn.init.xavier_uniform_(self.rt_linear2.weight.data)
 
 		if margin == None or epsilon == None:
 			nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
