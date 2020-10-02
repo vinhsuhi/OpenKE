@@ -7,7 +7,8 @@ from openke.data import TrainDataLoader, TestDataLoader
 import argparse
 
 parser = argparse.ArgumentParser(description="transE")
-parser.add_argument('--new', action='store_true')
+parser.add_argument('--weight1', type=float, default=.0)
+parser.add_argument('--weight2', type=float, default=.0)
 parser.add_argument('--epochs', type=int, default=1000)
 # parser.add_argument('--model_name', type=str, default="FB15K23")
 args = parser.parse_args()
@@ -32,7 +33,7 @@ transe = TransE(
 	rel_tot = train_dataloader.get_rel_tot(),
 	dim = 200, 
 	p_norm = 1, 
-	norm_flag = True, new=args.new)
+	norm_flag = True, weight1=args.weight1, weight2=args.weight2)
 
 
 # define the loss function
@@ -45,9 +46,9 @@ model = NegativeSampling(
 # train the model
 trainer = Trainer(model = model, data_loader = train_dataloader, train_times = args.epochs, alpha = 1.0, use_gpu = True)
 trainer.run()
-# transe.save_checkpoint('./checkpoint/transe.ckpt')
+transe.save_checkpoint('./checkpoint/transe.ckpt')
 
 # test the model
-# transe.load_checkpoint('./checkpoint/transe.ckpt')
+transe.load_checkpoint('./checkpoint/transe.ckpt')
 tester = Tester(model = transe, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)
