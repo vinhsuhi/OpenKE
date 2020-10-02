@@ -19,8 +19,10 @@ class TransE(Model):
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim)
 
-		self.hr_linear = nn.Linear(dim, dim)
-		self.rt_linear = nn.Linear(dim, dim)
+		self.hr_linear1 = nn.Linear(dim, dim)
+		self.hr_linear2 = nn.Linear(dim, dim)
+		self.rt_linear1 = nn.Linear(dim, dim)
+		self.rt_linear2 = nn.Linear(dim, dim)
 
 		nn.init.xavier_uniform_(self.hr_linear.weight.data)
 		nn.init.xavier_uniform_(self.rt_linear.weight.data)
@@ -54,7 +56,7 @@ class TransE(Model):
 	def _calc(self, h, t, r, mode):
 		if self.norm_flag:
 			h = F.normalize(h, 2, -1)
-			r = F.normalize(r, 2, -1)
+			# r = F.normalize(r, 2, -1)
 			t = F.normalize(t, 2, -1)
 		if mode != 'normal':
 			h = h.view(-1, r.shape[0], h.shape[-1])
@@ -70,7 +72,7 @@ class TransE(Model):
 	def _calc2(self, x, y):
 		if self.norm_flag:
 			x = F.normalize(x, 2, -1)
-			y = F.normalize(y, 2, -1)
+			# y = F.normalize(y, 2, -1)
 		score = (x - y)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
@@ -84,10 +86,10 @@ class TransE(Model):
 		t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
 
-		h_hr = self.hr_linear(h)
-		r_hr = self.hr_linear(r)
-		t_rt = self.rt_linear(t)
-		r_rt = self.rt_linear(r)
+		h_hr = self.hr_linear1(h)
+		r_hr = self.hr_linear2(r)
+		t_rt = self.rt_linear1(t)
+		r_rt = self.rt_linear2(r)
 
 		score = self._calc(h ,t, r, mode)
 		score1 = self._calc2(h_hr, r_hr)
