@@ -93,7 +93,7 @@ class TransE(Model):
 		score1 = self._calc2(h_hr, r_hr)
 		score2 = self._calc2(t_rt, r_rt)
 
-		final_score = score + self.weight1 * score1 + self.weight2 * score2
+		final_score = (1 - self.weight1 - self.weight2) * score + self.weight1 * score1 + self.weight2 * score2
 		if self.margin_flag:
 			return self.margin - final_score
 		else:
