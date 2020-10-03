@@ -31,7 +31,7 @@ test_dataloader = TestDataLoader("./benchmarks/FB15K237/", "link")
 transe = TransE(
 	ent_tot = train_dataloader.get_ent_tot(),
 	rel_tot = train_dataloader.get_rel_tot(),
-	dim = 200, 
+	dim = 128, 
 	p_norm = 1, 
 	norm_flag = True, weight1=args.weight1, weight2=args.weight2)
 
@@ -46,9 +46,9 @@ model = NegativeSampling(
 # train the model
 trainer = Trainer(model = model, data_loader = train_dataloader, train_times = args.epochs, alpha = 1.0, use_gpu = True)
 trainer.run()
-transe.save_checkpoint('./checkpoint/transe.ckpt')
+transe.save_checkpoint('./checkpoint/transe{}_{}.ckpt'.format(args.weight1, args.weight2))
 
 # test the model
-transe.load_checkpoint('./checkpoint/transe.ckpt')
+transe.load_checkpoint('./checkpoint/transe{}_{}.ckpt'.format(args.weight1, args.weight2))
 tester = Tester(model = transe, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)

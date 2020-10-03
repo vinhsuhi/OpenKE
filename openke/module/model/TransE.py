@@ -58,7 +58,7 @@ class TransE(Model):
 	def _calc(self, h, t, r, mode):
 		if self.norm_flag:
 			h = F.normalize(h, 2, -1)
-			# r = F.normalize(r, 2, -1)
+			r = F.normalize(r, 2, -1)
 			t = F.normalize(t, 2, -1)
 		if mode != 'normal':
 			h = h.view(-1, r.shape[0], h.shape[-1])
@@ -74,7 +74,7 @@ class TransE(Model):
 	def _calc2(self, x, y):
 		if self.norm_flag:
 			x = F.normalize(x, 2, -1)
-			# y = F.normalize(y, 2, -1)
+			y = F.normalize(y, 2, -1)
 		score = (x - y)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
