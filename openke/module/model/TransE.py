@@ -97,23 +97,15 @@ class TransE(Model):
 		score1 = self._calc2(h_hr, r_hr)
 		score2 = self._calc2(t_rt, r_rt)
 
+
 		final_score = (1 - self.weight1 - self.weight2) * score + self.weight1 * score1 + self.weight2 * score2
+		print("Score: {:.4f}, Score1: {:.4f}, Score2: {:.4f}, Final: {:.4f}".format(score, score1, score2, final_score))
+
 		if self.margin_flag:
 			return self.margin - final_score
 		else:
 			return final_score
 
-	# def regularization(self, data):
-	# 	batch_h = data['batch_h']
-	# 	batch_t = data['batch_t']
-	# 	batch_r = data['batch_r']
-	# 	h = self.ent_embeddings(batch_h)
-	# 	t = self.ent_embeddings(batch_t)
-	# 	r = self.rel_embeddings(batch_r)
-	# 	regul = (torch.mean(h ** 2) + 
-	# 			 torch.mean(t ** 2) + 
-	# 			 torch.mean(r ** 2)) / 3
-	# 	return regul
 
 	def predict(self, data):
 		score = self.forward(data)
