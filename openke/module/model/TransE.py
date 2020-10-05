@@ -99,7 +99,8 @@ class TransE(Model):
 
 
 		final_score = (1 - self.weight1 - self.weight2) * score + self.weight1 * score1 + self.weight2 * score2
-		print("Score: {:.4f}, Score1: {:.4f}, Score2: {:.4f}, Final: {:.4f}".format(score, score1, score2, final_score))
+		# print("Score: {:.4f}, Score1: {:.4f}, Score2: {:.4f}, Final: {:.4f}".format(score, score1, score2, final_score))
+		print(score, score1, score2, final_score)
 
 		if self.margin_flag:
 			return self.margin - final_score
