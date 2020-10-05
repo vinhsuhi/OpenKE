@@ -104,6 +104,7 @@ class TransE(Model):
 		# except:
 		# 	exit()
 		print(score, score1, score2, final_score)
+		exit()
 
 		if self.margin_flag:
 			return self.margin - final_score
