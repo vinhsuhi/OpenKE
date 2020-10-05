@@ -103,8 +103,10 @@ class TransE(Model):
 		# 	print("Score: {:.4f}, Score1: {:.4f}, Score2: {:.4f}, Final: {:.4f}".format(score, score1, score2, final_score))
 		# except:
 		# 	exit()
-		print(score, score1, score2, final_score)
-		exit()
+		# print(score, score1, score2, final_score)
+		# exit()
+
+		print(self.margin_flag)
 
 		if self.margin_flag:
 			return self.margin - final_score
