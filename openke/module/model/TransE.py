@@ -103,17 +103,17 @@ class TransE(Model):
 		else:
 			return final_score
 
-	def regularization(self, data):
-		batch_h = data['batch_h']
-		batch_t = data['batch_t']
-		batch_r = data['batch_r']
-		h = self.ent_embeddings(batch_h)
-		t = self.ent_embeddings(batch_t)
-		r = self.rel_embeddings(batch_r)
-		regul = (torch.mean(h ** 2) + 
-				 torch.mean(t ** 2) + 
-				 torch.mean(r ** 2)) / 3
-		return regul
+	# def regularization(self, data):
+	# 	batch_h = data['batch_h']
+	# 	batch_t = data['batch_t']
+	# 	batch_r = data['batch_r']
+	# 	h = self.ent_embeddings(batch_h)
+	# 	t = self.ent_embeddings(batch_t)
+	# 	r = self.rel_embeddings(batch_r)
+	# 	regul = (torch.mean(h ** 2) + 
+	# 			 torch.mean(t ** 2) + 
+	# 			 torch.mean(r ** 2)) / 3
+	# 	return regul
 
 	def predict(self, data):
 		score = self.forward(data)
