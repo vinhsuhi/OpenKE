@@ -29,30 +29,10 @@ class TransE(Model):
 		nn.init.xavier_uniform_(self.hr_linear2.weight.data)
 		nn.init.xavier_uniform_(self.rt_linear2.weight.data)
 
-		if margin == None or epsilon == None:
-			nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
-			nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
-		else:
-			self.embedding_range = nn.Parameter(
-				torch.Tensor([(self.margin + self.epsilon) / self.dim]), requires_grad=False
-			)
-			nn.init.uniform_(
-				tensor = self.ent_embeddings.weight.data, 
-				a = -self.embedding_range.item(), 
-				b = self.embedding_range.item()
-			)
-			nn.init.uniform_(
-				tensor = self.rel_embeddings.weight.data, 
-				a= -self.embedding_range.item(), 
-				b= self.embedding_range.item()
-			)
+		nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
+		nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
 
-		if margin != None:
-			self.margin = nn.Parameter(torch.Tensor([margin]))
-			self.margin.requires_grad = False
-			self.margin_flag = True
-		else:
-			self.margin_flag = False
+		self.margin_flag = False
 
 
 	def _calc(self, h, t, r, mode):
@@ -89,35 +69,18 @@ class TransE(Model):
 		r = self.rel_embeddings(batch_r)
 
 		h_hr = self.hr_linear1(h)
-		r_hr = self.hr_linear2(r)
+		r_hr = self.hr_linear1(r)
 		t_rt = self.rt_linear1(t)
-		r_rt = self.rt_linear2(r)
+		r_rt = self.rt_linear1(r)
 
 		score = self._calc(h ,t, r, mode)
 		score1 = self._calc2(h_hr, r_hr)
 		score2 = self._calc2(t_rt, r_rt)
 
-
 		final_score = (1 - self.weight1 - self.weight2) * score + self.weight1 * score1 + self.weight2 * score2
-		# try:
-		# 	print("Score: {:.4f}, Score1: {:.4f}, Score2: {:.4f}, Final: {:.4f}".format(score, score1, score2, final_score))
-		# except:
-		# 	exit()
-		# print(score, score1, score2, final_score)
-		# exit()
-
-		print(self.margin_flag)
-
-		if self.margin_flag:
-			return self.margin - final_score
-		else:
-			return final_score
+		return final_score
 
 
 	def predict(self, data):
 		score = self.forward(data)
-		if self.margin_flag:
-			score = self.margin - score
-			return score.cpu().data.numpy()
-		else:
-			return score.cpu().data.numpy()
+		return score.cpu().data.numpy()
