@@ -39,7 +39,7 @@ class TransE(Model):
 	def _calc(self, h, t, r, mode):
 		if self.norm_flag:
 			h = F.normalize(h, 2, -1)
-			# r = F.normalize(r, 2, -1)
+			r = F.normalize(r, 2, -1)
 			t = F.normalize(t, 2, -1)
 		if mode != 'normal':
 			h = h.view(-1, r.shape[0], h.shape[-1])
@@ -55,8 +55,8 @@ class TransE(Model):
 	def _calc2(self, x, y):
 		if self.norm_flag:
 			x = F.normalize(x, 2, -1)
-			# y = F.normalize(y, 2, -1)
-		score = (x - y)
+			y = F.normalize(y, 2, -1)
+		score = (x - y).sum()
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
 
@@ -74,7 +74,7 @@ class TransE(Model):
 		t_rt = self.rt_linear1(t)
 		r_rt = self.rt_linear2(r)
 
-		score = self._calc(h ,t, r, mode)
+		score = self._calc(h ,t, r, mode); return score + self.weight1 * self._calc2(h_hr, r) + self.weight2 * self._calc2(r, t_rt)
 		score1 = self._calc2(h_hr, r_hr)
 		score2 = self._calc2(t_rt, r_rt)
 
@@ -84,4 +84,4 @@ class TransE(Model):
 
 	def predict(self, data):
 		score = self.forward(data)
-		return score.cpu().data.numpy() + np.abs(np.random.randn(*score.shape)) / 10000
+		lol = score.cpu().data.numpy() ; return lol
