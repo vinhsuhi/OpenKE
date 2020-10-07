@@ -63,7 +63,7 @@ transe.save_parameters("./result/transr_transe.json")
 
 # train transr
 transr.set_parameters(parameters)
-trainer = Trainer(model = model_r, data_loader = train_dataloader, train_times = 1000, alpha = 1.0, use_gpu = True)
+trainer = Trainer(model = model_r, data_loader = train_dataloader, train_times = args.epochs, alpha = 1.0, use_gpu = True)
 trainer.run()
 transr.save_checkpoint('./checkpoint/transr.ckpt')
 
@@ -71,3 +71,10 @@ transr.save_checkpoint('./checkpoint/transr.ckpt')
 transr.load_checkpoint('./checkpoint/transr.ckpt')
 tester = Tester(model = transr, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)
+
+"""
+python -m examples.train_transr_FB15K237 --weight 1 --epochs
+
+
+
+"""
