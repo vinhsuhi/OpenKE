@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .Model import Model
+import numpy as np
 
 class TransE(Model):
 
@@ -78,9 +79,9 @@ class TransE(Model):
 		score2 = self._calc2(t_rt, r_rt)
 
 		final_score = (1 - self.weight1 - self.weight2) * score + self.weight1 * score1 + self.weight2 * score2
-		return final_score
+		return final_score 
 
 
 	def predict(self, data):
 		score = self.forward(data)
-		return score.cpu().data.numpy()
+		return score.cpu().data.numpy() + np.abs(np.random.randn(*score.shape)) / 10000
