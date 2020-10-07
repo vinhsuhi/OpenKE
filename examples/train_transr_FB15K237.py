@@ -4,13 +4,13 @@ from openke.module.model import TransE, TransR
 from openke.module.loss import MarginLoss
 from openke.module.strategy import NegativeSampling
 from openke.data import TrainDataLoader, TestDataLoader
+
 import argparse
 
 parser = argparse.ArgumentParser(description="transE")
-parser.add_argument('--new', action='store_true')
+parser.add_argument('--weight', type=float, default=.0)
 parser.add_argument('--epochs', type=int, default=1000)
 args = parser.parse_args()
-
 # dataloader for training
 train_dataloader = TrainDataLoader(
 	in_path = "./benchmarks/FB15K237/", 
@@ -33,7 +33,7 @@ transe = TransE(
 	rel_tot = train_dataloader.get_rel_tot(),
 	dim = 200, 
 	p_norm = 1, 
-	norm_flag = True, new=args.new)
+	norm_flag = True)
 
 model_e = NegativeSampling(
 	model = transe, 
@@ -47,7 +47,7 @@ transr = TransR(
 	dim_r = 200,
 	p_norm = 1, 
 	norm_flag = True,
-	rand_init = False, new=args.new)
+	rand_init = False, weight=args.weight)
 
 model_r = NegativeSampling(
 	model = transr,
@@ -59,15 +59,15 @@ model_r = NegativeSampling(
 trainer = Trainer(model = model_e, data_loader = train_dataloader, train_times = 1, alpha = 0.5, use_gpu = True)
 trainer.run()
 parameters = transe.get_parameters()
-# transe.save_parameters("./result/transr_transe.json")
+transe.save_parameters("./result/transr_transe.json")
 
 # train transr
 transr.set_parameters(parameters)
 trainer = Trainer(model = model_r, data_loader = train_dataloader, train_times = 1000, alpha = 1.0, use_gpu = True)
 trainer.run()
-# transr.save_checkpoint('./checkpoint/transr.ckpt')
+transr.save_checkpoint('./checkpoint/transr.ckpt')
 
 # test the model
-# transr.load_checkpoint('./checkpoint/transr.ckpt')
+transr.load_checkpoint('./checkpoint/transr.ckpt')
 tester = Tester(model = transr, data_loader = test_dataloader, use_gpu = True)
 tester.run_link_prediction(type_constrain = False)

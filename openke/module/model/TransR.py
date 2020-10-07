@@ -5,7 +5,7 @@ from .Model import Model
 
 class TransR(Model):
 
-	def __init__(self, ent_tot, rel_tot, dim_e = 100, dim_r = 100, p_norm = 1, norm_flag = True, rand_init = False, margin = None, new=False):
+	def __init__(self, ent_tot, rel_tot, dim_e = 100, dim_r = 100, p_norm = 1, norm_flag = True, rand_init = False, margin = None, new=False, weight=0):
 		super(TransR, self).__init__(ent_tot, rel_tot)
 		
 		self.dim_e = dim_e
@@ -14,6 +14,7 @@ class TransR(Model):
 		self.p_norm = p_norm
 		self.rand_init = rand_init
 		self.new = new
+		self.weight = weight
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
 		self.ent2_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
@@ -55,6 +56,14 @@ class TransR(Model):
 			score = (h + r) - t
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
+
+	def _calc2(self, x, y):
+		if self.norm_flag:
+			x = F.normalize(x, 2, -1)
+			# y = F.normalize(y, 2, -1)
+		score = (x - y).sum()
+		score = torch.norm(score, self.p_norm, -1).flatten()
+		return score
 	
 	def _transfer(self, e, r_transfer):
 		r_transfer = r_transfer.view(-1, self.dim_e, self.dim_r)
@@ -65,6 +74,7 @@ class TransR(Model):
 			e = e.view(-1, 1, self.dim_e)
 			e = torch.matmul(e, r_transfer)
 		return e.view(-1, self.dim_r)
+
 
 	def forward(self, data):
 		batch_h = data['batch_h']
@@ -80,11 +90,14 @@ class TransR(Model):
 		r_transfer = self.transfer_matrix(batch_r)
 		h = self._transfer(h, r_transfer)
 		t = self._transfer(t, r_transfer)
-		score = self._calc(h ,t, r, mode)
+		score1 = self._calc(h ,t, r, mode)
+		score2 = self._calc2(r, t)
+		score = score1 + self.weight * score2
 		if self.margin_flag:
 			return self.margin - score
 		else:
 			return score
+
 
 	def regularization(self, data):
 		batch_h = data['batch_h']

@@ -32,12 +32,12 @@ transe = TransE(
 	ent_tot = train_dataloader.get_ent_tot(),
 	rel_tot = train_dataloader.get_rel_tot(),
 	dim = 128, 
-	p_norm = 1, 
+	p_norm = 2, 
 	norm_flag = True, weight1=args.weight1, weight2=args.weight2)
 
 
 # define the loss function
-model = NegativeSampling(
+model = NegativeSampling( 
 	model = transe, 
 	loss = MarginLoss(margin = 5.0),
 	batch_size = train_dataloader.get_batch_size()
