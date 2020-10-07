@@ -38,7 +38,7 @@ class TransE(Model):
 	def _calc(self, h, t, r, mode):
 		if self.norm_flag:
 			h = F.normalize(h, 2, -1)
-			r = F.normalize(r, 2, -1)
+			# r = F.normalize(r, 2, -1)
 			t = F.normalize(t, 2, -1)
 		if mode != 'normal':
 			h = h.view(-1, r.shape[0], h.shape[-1])
@@ -54,7 +54,7 @@ class TransE(Model):
 	def _calc2(self, x, y):
 		if self.norm_flag:
 			x = F.normalize(x, 2, -1)
-			y = F.normalize(y, 2, -1)
+			# y = F.normalize(y, 2, -1)
 		score = (x - y)
 		score = torch.norm(score, self.p_norm, -1).flatten()
 		return score
@@ -67,18 +67,19 @@ class TransE(Model):
 		h = self.ent_embeddings(batch_h)
 		t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
+		return self._calc2(h, t)
 
-		h_hr = self.hr_linear1(h)
-		r_hr = self.hr_linear1(r)
-		t_rt = self.rt_linear1(t)
-		r_rt = self.rt_linear1(r)
+		# h_hr = self.hr_linear1(h)
+		# r_hr = self.hr_linear1(r)
+		# t_rt = self.rt_linear1(t)
+		# r_rt = self.rt_linear1(r)
 
-		score = self._calc(h ,t, r, mode)
-		score1 = self._calc2(h_hr, r_hr)
-		score2 = self._calc2(t_rt, r_rt)
+		# score = self._calc(h ,t, r, mode)
+		# score1 = self._calc2(h_hr, r_hr)
+		# score2 = self._calc2(t_rt, r_rt)
 
-		final_score = (1 - self.weight1 - self.weight2) * score + self.weight1 * score1 + self.weight2 * score2
-		return final_score
+		# final_score = (1 - self.weight1 - self.weight2) * score + self.weight1 * score1 + self.weight2 * score2
+		# return final_score
 
 
 	def predict(self, data):
