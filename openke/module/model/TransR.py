@@ -17,13 +17,13 @@ class TransR(Model):
 		self.weight = weight
 
 		self.ent_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
-		self.ent2_embeddings = nn.Embedding(self.ent_tot, self.dim_e)
 		self.rel_embeddings = nn.Embedding(self.rel_tot, self.dim_r)
 		nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
 		nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
 		nn.init.xavier_uniform_(self.ent2_embeddings.weight.data)
 
 		self.transfer_matrix = nn.Embedding(self.rel_tot, self.dim_e * self.dim_r)
+		self.transfer_matrix2 = nn.Embedding(self.rel_tot, self.dim_e * self.dim_r)
 		if not self.rand_init:
 			identity = torch.zeros(self.dim_e, self.dim_r)
 			for i in range(min(self.dim_e, self.dim_r)):
@@ -82,17 +82,13 @@ class TransR(Model):
 		batch_r = data['batch_r']
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
-		if self.new:
-			t = self.ent2_embeddings(batch_t)
-		else:
-			t = self.ent_embeddings(batch_t)
+		t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r)
-		r_transfer = self.transfer_matrix(batch_r)
-		h = self._transfer(h, r_transfer)
-		t = self._transfer(t, r_transfer)
-		score1 = self._calc(h ,t, r, mode)
-		score2 = self._calc2(r, t)
-		score = score1 + self.weight * score2
+		r_transfer1 = self.transfer_matrix(batch_r)
+		r_transfer2 = self.transfer_matrix2(batch_r)
+		h = self._transfer(h, r_transfer1)
+		t = self._transfer(t, r_transfer2)
+		score = self._calc(h ,t, r, mode)
 		if self.margin_flag:
 			return self.margin - score
 		else:
