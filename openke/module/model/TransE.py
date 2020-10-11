@@ -65,6 +65,16 @@ class TransE(Model):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
 		batch_r = data['batch_r']
+		if batch_h.shape > batch_t.shape:
+			batch_t = batch_h * 0 + batch_t
+			batch_t = batch_t.long()
+			batch_r = batch_h * 0 + batch_r
+			batch_r = batch_r.long()
+		if batch_t.shape > batch_h.shape:
+			batch_h = batch_t * 0 + batch_h
+			batch_h = batch_h.long()
+			batch_r = batch_t * 0 + batch_r 
+			batch_r = batch_r.long()
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
 		t = self.ent_embeddings(batch_t)
