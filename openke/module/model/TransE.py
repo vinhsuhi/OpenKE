@@ -30,7 +30,7 @@ class TransE(Model):
 		nn.init.xavier_uniform_(self.rt_linear1.weight.data)
 		nn.init.xavier_uniform_(self.hr_linear2.weight.data)
 		nn.init.xavier_uniform_(self.rt_linear2.weight.data)
-
+		nn.init.xavier_uniform_(self.triple_linear.weight.data)
 		nn.init.xavier_uniform_(self.ent_embeddings.weight.data)
 		nn.init.xavier_uniform_(self.rel_embeddings.weight.data)
 
@@ -79,11 +79,7 @@ class TransE(Model):
 		h = self.ent_embeddings(batch_h)
 		t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r) 
-		try:
-			hrt = torch.cat((h, t, r), dim=1)
-		except:
-			import pdb
-			pdb.set_trace()
+		hrt = torch.cat((h, t, r), dim=1)
 		hrt2 = self.triple_linear(hrt)
 		return self._calc(h, t, hrt2, mode)
 
