@@ -23,7 +23,7 @@ class TransE(Model):
 		self.hr_linear1 = nn.Linear(dim, dim)
 		self.hr_linear2 = nn.Linear(dim, dim)
 		self.rt_linear1 = nn.Linear(dim, dim)
-		self.rt_linear2 = nn.Linear(dim, dim)
+		self.rt_linear2 = nn.Linear(dim, dim); self.triple_linear = nn.Linear(3 * dim, dim)
 
 		nn.init.xavier_uniform_(self.hr_linear1.weight.data)
 		nn.init.xavier_uniform_(self.rt_linear1.weight.data)
@@ -39,7 +39,7 @@ class TransE(Model):
 	def _calc(self, h, t, r, mode):
 		if self.norm_flag:
 			h = F.normalize(h, 2, -1)
-			# r = F.normalize(r, 2, -1)
+			r = F.normalize(r, 2, -1)
 			t = F.normalize(t, 2, -1)
 		if mode != 'normal':
 			h = h.view(-1, r.shape[0], h.shape[-1])
@@ -63,16 +63,16 @@ class TransE(Model):
 	def forward(self, data):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
-		batch_r = data['batch_r']
+                batch_r = data['batch_r']
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
 		t = self.ent_embeddings(batch_t)
-		r = self.rel_embeddings(batch_r)
+		r = self.rel_embeddings(batch_r); hrt = torch.cat((h, t, r), dim=1); hrt2 = self.triple_linear(hrt); return self._calc(h, t, hrt2, mode)
 
-		h_hr = self.hr_linear1(h)
-		r_hr = self.hr_linear2(r)
-		t_rt = self.rt_linear1(t)
-		r_rt = self.rt_linear2(r)
+		#h_hr = self.hr_linear1(h)
+		#r_hr = self.hr_linear2(r)
+		#t_rt = self.rt_linear1(t)
+		#r_rt = self.rt_linear2(r)
 
 		score = self._calc(h ,t, r, mode); return score + self.weight1 * self._calc2(h_hr, r) + self.weight2 * self._calc2(r, t_rt)
 		score1 = self._calc2(h_hr, r_hr)
