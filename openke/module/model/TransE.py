@@ -69,7 +69,11 @@ class TransE(Model):
 		h = self.ent_embeddings(batch_h)
 		t = self.ent_embeddings(batch_t)
 		r = self.rel_embeddings(batch_r) 
-		hrt = torch.cat((h, t, r), dim=1)
+		try:
+			hrt = torch.cat((h, t, r), dim=1)
+		except:
+			import pdb
+			pdb.set_trace()
 		hrt2 = self.triple_linear(hrt)
 		return self._calc(h, t, hrt2, mode)
 
