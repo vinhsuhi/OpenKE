@@ -64,10 +64,19 @@ class TransE(Model):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
                 batch_r = data['batch_r']
+		if batch_h.shape > batch_t.shape:
+			batch_t = batch_h * 0 + batch_t
+			batch_r = batch_h * 0 + batch_r
+		if batch_h.shape < batch_t.shape:
+			batch_h = batch_t * 0 + batch_h
+			batch_r = batch_h * 0 + batch_r
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
 		t = self.ent_embeddings(batch_t)
-		r = self.rel_embeddings(batch_r); hrt = torch.cat((h, t, r), dim=1); hrt2 = self.triple_linear(hrt); return self._calc(h, t, hrt2, mode)
+		r = self.rel_embeddings(batch_r) 
+		hrt = torch.cat((h, t, r), dim=1)
+		hrt2 = self.triple_linear(hrt)
+		return self._calc(h, t, hrt2, mode)
 
 		#h_hr = self.hr_linear1(h)
 		#r_hr = self.hr_linear2(r)
