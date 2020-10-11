@@ -24,7 +24,7 @@ class TransE(Model):
 		self.hr_linear2 = nn.Linear(dim, dim)
 		self.rt_linear1 = nn.Linear(dim, dim)
 		self.rt_linear2 = nn.Linear(dim, dim)
-                self.triple_linear = nn.Linear(3 * dim, dim)
+		self.triple_linear = nn.Linear(3 * dim, dim)
 
 		nn.init.xavier_uniform_(self.hr_linear1.weight.data)
 		nn.init.xavier_uniform_(self.rt_linear1.weight.data)
@@ -64,13 +64,7 @@ class TransE(Model):
 	def forward(self, data):
 		batch_h = data['batch_h']
 		batch_t = data['batch_t']
-                batch_r = data['batch_r']
-                if batch_h.shape > batch_t.shape:
-                        batch_t = batch_h * 0 + batch_t
-                        batch_r = batch_h * 0 + batch_r
-                if batch_h.shape < batch_t.shape:
-                        batch_h = batch_t * 0 + batch_h
-                        batch_r = batch_h * 0 + batch_r
+		batch_r = data['batch_r']
 		mode = data['mode']
 		h = self.ent_embeddings(batch_h)
 		t = self.ent_embeddings(batch_t)
